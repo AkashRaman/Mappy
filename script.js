@@ -22,6 +22,49 @@ const mappyIcon = L.icon({
   shadowAnchor: [20, 50]
 });
 
+class Workout{
+  date = new Date();
+  id = (Date.now() + '').slice(-10);
+  coors;
+  distance;
+  duration;
+
+  constructor(coords,distance,duration){
+    this.coords = coords;
+    this.distance = distance;
+    this.duration = duration;
+  }
+}
+
+class Running extends Workout{
+  cadence;
+  pace;
+  constructor(coords,distance,duration,cadence){
+    super(coords,distance,duration)
+    this.cadence = cadence;
+    this.calcPace();
+  }
+
+  calcPace(){
+    this.pace = this.duration / this.distance;
+  }
+}
+
+class Cycling extends Workout{
+  elevation;
+  speed;
+
+  constructor(coords,distance,duration,elevation){
+    super(coords,distance,duration)
+    this.cadence = elevation;
+    this.calcSpped();
+  }
+  
+  calcSpped(){
+    this.speed = this.distance / (this.duration / 60);
+  }
+}
+
 class App {
   #map;
   #mapEvent;
