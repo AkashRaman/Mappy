@@ -24,7 +24,7 @@ const mappyIcon = L.icon({
 class Workout {
   date = new Date();
   id = (Date.now() + '').slice(-10);
-  coors;
+  coords;
   distance;
   duration;
 
@@ -67,6 +67,7 @@ class Cycling extends Workout {
 class App {
   #map;
   #mapEvent;
+  #workout = [];
   constructor() {
     this._getPostion();
 
@@ -133,22 +134,32 @@ class App {
     const type = inputType.value;
     const distance = +inputDistance.value;
     const duration = +inputDuration.value;
-
+    const { lat, lng } = this.#mapEvent.latlng;
+    let workout;
     if (type === 'running') {
       const cadence = +inputCadence.value;
       if(!validInputs(distance,duration,cadence)||!allPositive(distance,duration,cadence)) return alert("Enter positive input");
+      workout = new Running([lat, lng],distance,duration,cadence);
     }
     
     if (type === 'cycling') {
       const elevation = +inputElevation.value;
       if(!validInputs(distance,duration,elevation)||!allPositive(distance,duration)) return alert("Enter positive input");
+      workout = new Cycling([lat, lng],distance,duration,elevation);
     }
 
-    
+    this.#workout.push(workout);
+    console.log(workout);
 
-    const { lat, lng } = this.#mapEvent.latlng;
+    this._renderWorkoutMap(workout,type)
     
-    L.marker([lat, lng], { icon: mappyIcon })
+    inputDistance.value = inputDuration.value = inputCadence.value = inputElevation.value = '';
+
+    form.classList.add('hidden');
+  }
+
+  _renderWorkoutMap(workout,type){
+    L.marker(workout.coords, { icon: mappyIcon })
       .addTo(this.#map)
       .bindPopup(
         L.popup({
@@ -156,16 +167,12 @@ class App {
           minWidth: 100,
           autoClose: false,
           closeOnClick: false,
-          className: 'running-popup',
+          className: `${type}-popup`,
         })
       )
-      .setPopupContent('Workout')
+      .setPopupContent(`Running on ${Date.months}`)
       .openPopup();
 
-    
-    inputDistance.value = inputDuration.value = inputCadence.value = inputElevation.value = '';
-
-    form.classList.add('hidden');
   }
 }
 
