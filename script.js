@@ -10,6 +10,7 @@ const inputDistance = document.querySelector('.form__input--distance');
 const inputDuration = document.querySelector('.form__input--duration');
 const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
+const logo = document.querySelector('.logo');
 
 const mappyIcon = L.icon({
   iconUrl: 'icon.png',
@@ -78,6 +79,7 @@ class App {
   #mapEvent;
   #mapZoomLevel = 13;
   #workout = [];
+  #currentPosition;
   constructor() {
     this._getPostion();
 
@@ -86,6 +88,12 @@ class App {
     form.addEventListener('submit', this._newWorkout.bind(this));
 
     containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
+    logo.addEventListener('click', () => this.#map.setView(this.#currentPosition, this.#map.getZoom(), {
+        animation: true,
+        pan: {
+          duration: 1,
+        },})
+    );
   }
 
   _getPostion() {
@@ -101,16 +109,16 @@ class App {
 
   _loadMap(position) {
     const { latitude, longitude } = position.coords;
-    const coords = [latitude, longitude];
+    this.#currentPosition = [latitude, longitude];
 
-    this.#map = L.map('map').setView(coords, this.#mapZoomLevel);
+    this.#map = L.map('map').setView(this.#currentPosition, this.#mapZoomLevel);
 
     L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
       attribution:
         '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(this.#map);
 
-    L.marker(coords, { icon: mappyIcon })
+    L.marker(this.#currentPosition, { icon: mappyIcon })
       .addTo(this.#map)
       .bindPopup(
         L.popup({
@@ -178,6 +186,8 @@ class App {
     this._renderWorkoutList(workout);
 
     this._hideAndClearForm();
+
+    this._setLocalStorage();
   }
   _renderWorkoutMap(workout) {
     L.marker(workout.coords, { icon: mappyIcon })
@@ -206,9 +216,7 @@ class App {
         <li class="workout workout--${workout.type}" data-id="${workout.id}">
         <h2 class="workout__title">${workout.description}</h2>
         <div class="workout__details">
-        <span class="workout__icon">${
-          workout.type === 'running' ? `🏃‍♂️` : `🚴‍♀️`
-        }</span>
+        <span class="workout__icon">${workout.type === 'running' ? `🏃‍♂️` : `🚴‍♀️`}</span>
         <span class="workout__value">${workout.distance}</span>
         <span class="workout__unit">km</span>
         </div>
@@ -219,11 +227,7 @@ class App {
           </div>
           <div class="workout__details">
           <span class="workout__icon">⚡️</span>
-          <span class="workout__value">${
-            workout.type === 'running'
-              ? workout.pace.toFixed(1)
-              : workout.speed.toFixed(1)
-          }</span>
+          <span class="workout__value">${workout.type === 'running' ? workout.pace.toFixed(1) : workout.speed.toFixed(1)}</span>
           <span class="workout__unit">${
             workout.type === 'running' ? `min/km` : `km/h`
           }</span>
@@ -245,11 +249,7 @@ class App {
   }
 
   _hideAndClearForm() {
-    inputDistance.value =
-      inputDuration.value =
-      inputCadence.value =
-      inputElevation.value =
-        '';
+    inputDistance.value = inputDuration.value = inputCadence.value = inputElevation.value = '';
 
     form.style.display = 'none';
     form.classList.add('hidden');
@@ -264,12 +264,16 @@ class App {
       work => work.id === workoutEl.dataset.id
     );
 
-    this.#map.setView(workout.coords, this.#mapZoomLevel, {
+    this.#map.setView(workout.coords, this.#map.getZoom(), {
       Animation: true,
       pan: {
-        duration: 1
-      }
+        duration: 1,
+      },
     });
+  }
+
+  _setLocalStorage(){
+    localStorage.setItem('workouts', JSON.stringify(this.#workout))
   }
 }
 

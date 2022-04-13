@@ -53,6 +53,7 @@ a:visited {
   height: 5.2rem;
   align-self: center;
   margin-bottom: 4rem;
+  cursor: pointer;
 }
 
 .workouts {
