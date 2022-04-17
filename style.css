@@ -56,23 +56,6 @@ a:visited {
   cursor: pointer;
 }
 
-.about-btn{
-  background-color: var(--color-dark--1);
-  position:absolute;
-  top:2.5rem;
-  right:-1rem;
-  z-index: 9999;
-  font-size: 2rem;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 0.5rem 3rem 0.5rem 1rem;
-  transition: all 0.5s, transform 1s;
-}
-
-.about-btn:hover{
-  transform: translateX(-1rem);
-}
-
 .workouts {
   list-style: none;
   height: 77vh;
@@ -239,24 +222,41 @@ a:visited {
 }
 
 .removeWorkout-button,
-.hide-button{
+.hide-button,
+.edit-btn{
   position: absolute;
-    top: 0;
-    right: 0;
-    padding: 4px 4px 0 0;
-    border: none;
-    text-align: center;
-    width: 18px;
-    height: 14px;
-    font: 16px/14px Tahoma, Verdana, sans-serif;
-    color: #c3c3c3!important;
-    text-decoration: none;
-    font-weight: bold;
-    background: transparent;
-    z-index: 10;
+  right: 0;
+  border: none;
+  text-align: center;
+  width: 18px;
+  color: #c3c3c3!important;
+  text-decoration: none;
+  font-weight: bold!important;
+  background: transparent;
+  z-index: 10;
+}
+
+.removeWorkout-button,
+.hide-button{
+  top: 0;
+  padding: 4px 4px 0 0;
+  height: 14px;
+  font: 16px/14px Tahoma, Verdana, sans-serif;
+}
+
+.edit-btn{
+  bottom: 0;
+  padding: 0 4px 4px 0;
+  font: 12px/14px Tahoma, Verdana, sans-serif;
+  transition: all 0.5s;
+  transform-origin: center;
 }
 
 .removeWorkout-button:hover,
 .hide-button:hover{
   color: #999!important;
+}
+
+.edit-btn:hover{
+  transform: scale(1.1);
 }
